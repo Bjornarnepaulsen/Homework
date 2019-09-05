@@ -1,18 +1,20 @@
 
 function CipherText = ENIGMA_II_Encrypt(PlainText,Key)
 
-
+tic
     %Defining the wheels as an array
     Wheels = ['abcdefghijklmnopqrstuvwxyz';'acedfhgikjlnmoqprtsuwvxzyb';'azyxwvutsrqponmlkjihgfedcb'];
+    
     Wheels = Wheels - 'a';
     
-    %Defining ciphertext
+    %Defining variables
+    
     CipherText = (1:length(PlainText));
-    
-    
     PlainText = PlainText - 'a';
-    
     Key = Key -'a';
+    Upper_Case = 0;
+    counter = 1;
+    
     %Since Key-'a' leaves us with -44 = 5 etc, Key(placement) + 49 leaves
     %us with the right value, and we can hardcode the name of the wheel
     %where we want it
@@ -27,7 +29,8 @@ function CipherText = ENIGMA_II_Encrypt(PlainText,Key)
     
     for i=1:length(PlainText)
         
-        Upper_Case = 0;
+        %Checking for special characters and uppercase letters
+    
         if (-32 <= PlainText(i)) && (PlainText(i) <=-1)
             PlainText(i) = PlainText(i) + 32;
             Upper_Case = 1;
@@ -37,7 +40,7 @@ function CipherText = ENIGMA_II_Encrypt(PlainText,Key)
             end
         end
         
-        
+        %Calculating direction and distance of the turn of the wheel
         
         start = find(RightWheel==Key(6));
         stop = find(RightWheel==PlainText(i));
@@ -47,14 +50,15 @@ function CipherText = ENIGMA_II_Encrypt(PlainText,Key)
         end
         
        
-            
+       %Checking if it should be the left wheel or the middle wheel     
         
-        if mod(i,2) == 1
+        if mod(counter,2) == 1
+            counter = counter + 1;
             start = find(LeftWheel==Key(4));
-            stop =start + result
-            if stop < 0
+            stop =start + result;
+            if stop <= 0
                 stop = 26 + stop;
-            else if stop > 26
+            else if stop > 26;
                     stop = stop - 26;
                 end
             end
@@ -67,11 +71,12 @@ function CipherText = ENIGMA_II_Encrypt(PlainText,Key)
             
             
         else
+            counter = counter + 1;
             start = find(MiddleWheel==Key(5));
-            stop = start + result
-             if stop < 0
+            stop = start + result;
+             if stop <= 0
                 stop = 26 + stop;
-             else if stop > 26
+             else if stop > 26;
                      stop = stop - 26;
                  end
              end
@@ -86,3 +91,4 @@ function CipherText = ENIGMA_II_Encrypt(PlainText,Key)
         end
     end
 CipherText = char(CipherText +'a');
+toc

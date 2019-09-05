@@ -6,13 +6,13 @@ function PlainText = ENIGMA_II_Encrypt(CipherText,Key)
     Wheels = ['abcdefghijklmnopqrstuvwxyz';'acedfhgikjlnmoqprtsuwvxzyb';'azyxwvutsrqponmlkjihgfedcb'];
     Wheels = Wheels - 'a';
     
-    %Defining ciphertext
+    %Defining variables
     PlainText = (1:length(CipherText));
-    
-    
     CipherText = CipherText - 'a';
-    
     Key = Key -'a';
+    Upper_Case = 0;
+    counter = 1;
+    
     
     %Since Key-'a' leaves us with -44 = 5 etc, Key(placement) + 49 leaves
     %us with the right value, and we can hardcode the name of the wheel
@@ -28,7 +28,8 @@ function PlainText = ENIGMA_II_Encrypt(CipherText,Key)
     
     for i=1:length(CipherText)
         
-        Upper_Case = 0;
+        %Checking for special characters and uppercase letters
+        
         if (-32 <= CipherText(i)) && (CipherText(i) <=-1)
             CipherText(i) = CipherText(i) + 32;
             Upper_Case = 1;
@@ -38,7 +39,10 @@ function PlainText = ENIGMA_II_Encrypt(CipherText,Key)
             end
         end
         
-        if mod(i,2) == 1
+        %Checking if it should be the left wheel or the middle wheel   
+        
+        if mod(counter,2) == 1
+            counter = counter + 1;
             start = find(LeftWheel==Key(4));
             stop = find(LeftWheel==CipherText(i));
              result = abs(start - stop);
@@ -46,6 +50,7 @@ function PlainText = ENIGMA_II_Encrypt(CipherText,Key)
             result = -(result);
         end
         else
+            counter = counter + 1;
             start = find(MiddleWheel==Key(5));
             stop = find(MiddleWheel==CipherText(i));
              result = abs(start - stop);
@@ -54,9 +59,11 @@ function PlainText = ENIGMA_II_Encrypt(CipherText,Key)
         end
         end
         
+        %Calculating plaintext
+        
         start = find(RightWheel==Key(6));
             stop = start + result;
-             if stop < 0
+             if stop <= 0
                 stop = 26 + stop;
              else if stop > 26
                      stop = stop - 26;
